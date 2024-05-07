@@ -37,38 +37,42 @@ axiosClient.interceptors.response.use(
     return data;
   },
   ({ response }) => {
-    const { status, data } = response as AxiosResponse<AxiosResponseData>;
+    const { status, data } = response as AxiosResponse;
     const fieldErrors: BadRequestFieldError = {};
 
     if (data?.fieldErrors?.length) {
-      data.fieldErrors.forEach(({ field, messageCode }) => {
-        if (fieldErrors[field]) {
-          fieldErrors[field].push(messageCode);
-        } else {
-          fieldErrors[field] = [messageCode];
+      data.fieldErrors.forEach(
+        ({ field, messageCode }: { field: string; messageCode: string }) => {
+          if (fieldErrors[field]) {
+            fieldErrors[field].push(messageCode);
+          } else {
+            fieldErrors[field] = [messageCode];
+          }
         }
-      });
+      );
     }
 
-    const error: HttpResponse = {
-      status,
-      ok: false,
-      error: {
-        unauthorized: status === 401,
-        badRequest: status === 400,
-        notFound: status === 404,
-        clientError: status >= 400 && status <= 499,
-        serverError: status >= 500 && status <= 599,
-        message: data.messageCode || data.data.messageCode,
-        title: `${data.messageCode}-title`,
-        fieldErrors: isEmptyObject(fieldErrors) ? undefined : fieldErrors,
-        errors: data.errors,
-        detail: data.detail,
-        data: data.data,
-      },
-    };
+    // const error: HttpResponse = {
+    //   status,
+    //   ok: false,
+    //   error: {
+    //     unauthorized: status === 401,
+    //     badRequest: status === 400,
+    //     notFound: status === 404,
+    //     clientError: status >= 400 && status <= 499,
+    //     serverError: status >= 500 && status <= 599,
+    //     message: data.messageCode || data.data.messageCode,
+    //     title: `${data.messageCode}-title`,
+    //     fieldErrors: isEmptyObject(fieldErrors) ? undefined : fieldErrors,
+    //     errors: data.errors,
+    //     detail: data.detail,
+    //     data: data.data,
+    //   },
+    // };
 
-    return Promise.reject(error);
+    console.log(response);
+
+    return Promise.reject(response);
   }
 );
 

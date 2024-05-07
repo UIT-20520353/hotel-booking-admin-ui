@@ -1,5 +1,7 @@
 import authApi from "@/api/authApi";
 import TextInputField from "@/components/form/text-input-field";
+import useAccessToken from "@/hooks/useAccessToken";
+import useHandleResponseError from "@/hooks/useHandleResponseError";
 import { LoginFormProps } from "@/models/form/login-form";
 import {
   EyeInvisibleOutlined,
@@ -8,15 +10,36 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Button, Form } from "antd";
-import React, { useState } from "react";
+import clsx from "clsx";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface LoginPageProps {}
 
-const LoginPage: React.FunctionComponent<LoginPageProps> = () => {
-  const [form] = Form.useForm();
+interface FormFieldErrorProps {
+  email: boolean;
+  password: boolean;
+}
 
+const LoginPage: React.FunctionComponent<LoginPageProps> = () => {
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const handleReponseError = useHandleResponseError();
+
+  const { setAccessToken, accessToken } = useAccessToken();
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<FormFieldErrorProps>({
+    email: false,
+    password: false,
+  });
+
+  const handleFormFieldsChange = () => {
+    setErrors({
+      email: !!form.getFieldError("email").length,
+      password: !!form.getFieldError("password").length,
+    });
+  };
 
   const onSubmit = async (data: LoginFormProps) => {
     setLoading(true);
@@ -24,21 +47,30 @@ const LoginPage: React.FunctionComponent<LoginPageProps> = () => {
     setLoading(false);
 
     if (ok && body) {
-      console.log(body);
-      return;
+      setAccessToken(body.accessToken);
+      navigate("/");
     }
 
-    console.error(error);
+    if (error) {
+      handleReponseError(error);
+    }
   };
+
+  useEffect(() => {
+    if (accessToken) {
+      navigate("/");
+    }
+  }, [accessToken, navigate]);
 
   return (
     <div className="flex items-center justify-center w-full h-screen bg-c-white-1">
       <Form
         name="login-form"
-        className="flex flex-col items-center w-1/3 gap-4 p-8 bg-white shadow rounded-3xl"
+        className="flex flex-col items-center w-1/3 p-8 bg-white shadow rounded-3xl"
         form={form}
         onFinish={onSubmit}
         layout="vertical"
+        onFieldsChange={handleFormFieldsChange}
       >
         <h2 className="mb-3 text-2xl font-bold">Đăng nhập</h2>
         <TextInputField
@@ -50,7 +82,10 @@ const LoginPage: React.FunctionComponent<LoginPageProps> = () => {
             { type: "email", message: "Vui lòng nhập email hợp lệ" },
           ]}
           inputClassName="h-10"
-          className="mb-3"
+          className={clsx("duration-300", {
+            "mb-3": !errors.email,
+            "mb-7": errors.email,
+          })}
         />
         <TextInputField
           name={"password"}
@@ -72,7 +107,10 @@ const LoginPage: React.FunctionComponent<LoginPageProps> = () => {
           rules={[{ required: true, message: "Vui lòng mật khẩu" }]}
           inputClassName="h-10"
           type={isShowPassword ? "text" : "password"}
-          className="mb-3"
+          className={clsx("duration-300", {
+            "mb-3": !errors.password,
+            "mb-7": errors.password,
+          })}
         />
         <Button
           htmlType="submit"

@@ -1,9 +1,12 @@
+import useAccessToken from "@/hooks/useAccessToken";
 import React from "react";
 
 interface DashboardProps {}
 
 const Dashboard: React.FunctionComponent<DashboardProps> = () => {
-  return <div>dasdasdad</div>;
+  const { accessToken } = useAccessToken();
+
+  return <div>{accessToken || "--"}</div>;
 };
 
 export default Dashboard;

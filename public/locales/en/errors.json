@@ -1,6 +1,6 @@
 {
   "error": {
-    "title": "Error!!!",
+    "title": "Error !!!",
     "validate": {
       "login": {
         "invalid-credential": "Oops! Your login credentials are incorrect."

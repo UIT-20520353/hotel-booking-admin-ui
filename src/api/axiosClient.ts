@@ -52,27 +52,25 @@ axiosClient.interceptors.response.use(
       );
     }
 
-    // const error: HttpResponse = {
-    //   status,
-    //   ok: false,
-    //   error: {
-    //     unauthorized: status === 401,
-    //     badRequest: status === 400,
-    //     notFound: status === 404,
-    //     clientError: status >= 400 && status <= 499,
-    //     serverError: status >= 500 && status <= 599,
-    //     message: data.messageCode || data.data.messageCode,
-    //     title: `${data.messageCode}-title`,
-    //     fieldErrors: isEmptyObject(fieldErrors) ? undefined : fieldErrors,
-    //     errors: data.errors,
-    //     detail: data.detail,
-    //     data: data.data,
-    //   },
-    // };
+    const error: HttpResponse = {
+      status,
+      ok: false,
+      error: {
+        unauthorized: status === 401,
+        badRequest: status === 400,
+        notFound: status === 404,
+        clientError: status >= 400 && status <= 499,
+        serverError: status >= 500 && status <= 599,
+        message: data.detail,
+        title: `${data.detail}-title`,
+        fieldErrors: isEmptyObject(fieldErrors) ? undefined : fieldErrors,
+        errors: data.errors,
+        detail: data.detail,
+        data: data.data,
+      },
+    };
 
-    console.log(response);
-
-    return Promise.reject(response);
+    return Promise.reject(error);
   }
 );
 

@@ -22,7 +22,7 @@ export interface HttpError {
   data?: ErrorData;
 }
 
-export interface HttpResponse<T = never> {
+export interface HttpResponse<T = unknown> {
   status: number;
   ok: boolean;
   body?: T;

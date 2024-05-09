@@ -1,20 +1,9 @@
-import useAccessToken from "@/hooks/useAccessToken";
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 interface DashboardProps {}
 
 const Dashboard: React.FunctionComponent<DashboardProps> = () => {
-  const navigate = useNavigate();
-  const { accessToken } = useAccessToken();
-
-  useEffect(() => {
-    if (!accessToken) {
-      navigate("/login");
-    }
-  }, [accessToken, navigate]);
-
-  return <div>{accessToken || "--"}</div>;
+  return <div className="px-10 py-6">dashboard</div>;
 };
 
 export default Dashboard;

@@ -22,10 +22,14 @@ export interface HttpError {
   data?: ErrorData;
 }
 
-export interface HttpResponse<T = unknown> {
+export interface HttpResponse<T = never> {
   status: number;
   ok: boolean;
   body?: T;
   pagination?: Pagination;
   error?: HttpError;
+}
+
+export interface HttpHeaders {
+  Authorization: string;
 }

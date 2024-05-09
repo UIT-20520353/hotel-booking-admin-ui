@@ -1,11 +1,13 @@
 import { HttpError } from "@/models/http";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Modal } from "antd";
 import { useCallback, useMemo } from "react";
+import useAccessToken from "./useAccessToken";
 import { useErrorTranslate } from "./useAppTranslate";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const useHandleResponseError = () => {
   const e = useErrorTranslate();
+  const { logout } = useAccessToken();
 
   const title = useMemo(
     () => (
@@ -21,6 +23,15 @@ const useHandleResponseError = () => {
 
   const handleResponseError = useCallback(
     (error: HttpError) => {
+      if (
+        error.unauthorized &&
+        error.message !== "error.validate.user.is-not-admin" &&
+        error.message !== "error.validate.login.invalid-credential"
+      ) {
+        logout();
+        return;
+      }
+
       const instance = Modal.error({
         title,
         content: (
@@ -44,7 +55,7 @@ const useHandleResponseError = () => {
         icon: null,
       });
     },
-    [e, title]
+    [e, title, logout]
   );
 
   return handleResponseError;

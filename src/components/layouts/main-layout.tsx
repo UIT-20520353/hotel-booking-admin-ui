@@ -1,8 +1,23 @@
 import authApi from "@/api/authApi";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import useAccessToken from "@/hooks/useAccessToken";
+import useHandleResponseError from "@/hooks/useHandleResponseError";
 import { selectProfile, setProfile } from "@/redux/auth-slice";
-import { Dropdown, Layout } from "antd";
+import {
+  addLoading,
+  removeLoading,
+  selectIsLoading,
+} from "@/redux/global-slice";
+import {
+  AppstoreAddOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import { Dropdown, Layout, Spin } from "antd";
+import clsx from "clsx";
 import React, {
   Fragment,
   ReactNode,
@@ -11,15 +26,6 @@ import React, {
   useMemo,
 } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import type { MenuProps } from "antd";
-import {
-  HomeOutlined,
-  LogoutOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import useHandleResponseError from "@/hooks/useHandleResponseError";
-import clsx from "clsx";
 
 const { Header, Content, Sider } = Layout;
 
@@ -32,6 +38,7 @@ interface MenuItemProps {
 }
 
 const MainLayout: React.FunctionComponent<MainLayoutProps> = () => {
+  const isLoading = useAppSelector(selectIsLoading);
   const profile = useAppSelector(selectProfile);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -65,13 +72,20 @@ const MainLayout: React.FunctionComponent<MainLayoutProps> = () => {
         to: "/users",
         icon: <TeamOutlined className="text-2xl" />,
       },
+      {
+        label: "Quản lý dịch vụ",
+        to: "/hotel-services",
+        icon: <AppstoreAddOutlined className="text-2xl" />,
+      },
     ],
     []
   );
 
   const getUserProfile = useCallback(
     async (token: string) => {
+      dispatch(addLoading());
       const { ok, body, error } = await authApi.getUserProfile(token);
+      dispatch(removeLoading());
       if (ok && body) {
         dispatch(setProfile(body));
       }
@@ -88,10 +102,11 @@ const MainLayout: React.FunctionComponent<MainLayoutProps> = () => {
     } else {
       getUserProfile(accessToken);
     }
-  }, [accessToken, navigate, getUserProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, getUserProfile]);
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="relative min-h-screen">
       <Sider className="overflow-auto main-layout__sider" width={250}>
         <div className="flex items-center justify-center w-full h-16">
           <span className="text-xl font-bold text-c-blue-1">BookingCare</span>
@@ -146,8 +161,16 @@ const MainLayout: React.FunctionComponent<MainLayoutProps> = () => {
             </div>
           </Dropdown>
         </Header>
-        <Content>{<Outlet />}</Content>
+        <Content className="max-h-[calc(100vh-64px)] min-h-[calc(100vh-64px)] overflow-auto">
+          {<Outlet />}
+        </Content>
       </Layout>
+
+      {!!isLoading && (
+        <div className="absolute top-0 left-0 flex items-center justify-center w-full min-h-screen bg-black opacity-60">
+          <Spin size="large" />
+        </div>
+      )}
     </Layout>
   );
 };

@@ -10,7 +10,14 @@ import {
 import { PaginationProps } from "@/models/pagination";
 import { UserDetailProps } from "@/models/user";
 import { EyeOutlined } from "@ant-design/icons";
-import { Pagination, Table, Tag, Tooltip, type TableColumnsType } from "antd";
+import {
+  Empty,
+  Pagination,
+  Table,
+  Tag,
+  Tooltip,
+  type TableColumnsType,
+} from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -25,7 +32,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
   const handleResponseError = useHandleResponseError();
 
   const { accessToken } = useAccessToken();
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const [isLocalLoading, setLocalLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     page: 0,
   });
@@ -36,7 +43,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
 
   const getUserList = useCallback(
     async (pagi: PaginationProps) => {
-      setLoading(true);
+      setLocalLoading(true);
       const {
         ok,
         body,
@@ -48,7 +55,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
         },
         pagi
       );
-      setLoading(false);
+      setLocalLoading(false);
       if (ok && body && p) {
         setUserList({ items: body, total: p.total });
       }
@@ -140,16 +147,19 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
         columns={columns}
         dataSource={userList.items}
         pagination={false}
-        loading={isLoading}
+        loading={isLocalLoading}
+        locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
       />
-      <div className="flex items-center justify-end w-full mt-3">
-        <Pagination
-          total={userList.total}
-          pageSize={10}
-          current={pagination.page}
-          onChange={onPageChange}
-        />
-      </div>
+      {!!userList.total && (
+        <div className="flex items-center justify-end w-full mt-3">
+          <Pagination
+            total={userList.total}
+            pageSize={10}
+            current={pagination.page}
+            onChange={onPageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import { EUserRole, EUserStatus } from "@/enums/user";
+import { HotelServiceProps } from "@/models/hotel-service";
+import { PaginationProps } from "@/models/pagination";
 import { UserDetailProps, UserProfileProps } from "@/models/user";
 
 export const initialUserProfile: UserProfileProps = {
@@ -26,4 +28,15 @@ export const initialUserDetail: UserDetailProps = {
     backIdentityCard: "",
     selfieImg: "",
   },
+};
+
+export const initialPagination: PaginationProps = {
+  size: 10,
+  page: 1,
+  sort: "id,asc",
+};
+
+export const initialHotelService: HotelServiceProps = {
+  id: -1,
+  name: "",
 };

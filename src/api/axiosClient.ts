@@ -5,7 +5,8 @@ import axios, { AxiosResponse } from "axios";
 // import parse from "parse-link-header";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:8080/",
+  baseURL: "http://54.255.249.131:8080/",
+  // baseURL: "http://localhost:8080/",
   headers: {
     "Content-Type": "application/json",
   },

@@ -26,7 +26,7 @@ const useHandleResponseSuccess = () => {
         footer: (
           <div className="flex items-center justify-center w-full mt-2">
             <Button
-              className="w-1/2"
+              className="w-1/2 text-base font-medium bg-green-400 hover:!bg-green-500"
               type="primary"
               onClick={() => {
                 if (afterClose) {
@@ -34,7 +34,6 @@ const useHandleResponseSuccess = () => {
                 }
                 instance.destroy();
               }}
-              color="success"
             >
               OK
             </Button>

@@ -1,4 +1,4 @@
-import hotelServiceApi from "@/api/hotelServiceApi";
+import amenityApi from "@/api/amenityApi";
 import TextInputField from "@/components/form/text-input-field";
 import useAccessToken from "@/hooks/useAccessToken";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
@@ -7,7 +7,7 @@ import { Button, Form, Modal } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useMemo, useState } from "react";
 
-interface AddHotelServiceModalProps {
+interface AddAmenityModalProps {
   open: boolean;
   onClose: (refresh: boolean) => void;
 }
@@ -16,9 +16,10 @@ interface FormFieldErrorProps {
   name: boolean;
 }
 
-const AddHotelServiceModal: React.FunctionComponent<
-  AddHotelServiceModalProps
-> = ({ open, onClose }) => {
+const AddAmenityModal: React.FunctionComponent<AddAmenityModalProps> = ({
+  open,
+  onClose,
+}) => {
   const [form] = Form.useForm();
   const { accessToken } = useAccessToken();
   const handleResponseError = useHandleResponseError();
@@ -32,7 +33,7 @@ const AddHotelServiceModal: React.FunctionComponent<
   const title = useMemo(
     () => (
       <div className="flex items-center justify-center w-full">
-        <p className="text-base font-medium">Thêm dịch vụ</p>
+        <p className="text-base font-medium">Thêm tiện nghi</p>
       </div>
     ),
     []
@@ -46,13 +47,13 @@ const AddHotelServiceModal: React.FunctionComponent<
 
   const onSubmit = async (data: { name: string }) => {
     setLoading(true);
-    const { ok, error } = await hotelServiceApi.createHotelService(data.name, {
+    const { ok, error } = await amenityApi.createAmenity(data.name, {
       Authorization: `Bearer ${accessToken}`,
     });
     setLoading(false);
 
     if (ok) {
-      handleResponseSuccess("Thêm dịch vụ thành công", () => onClose(true));
+      handleResponseSuccess("Thêm tiện nghi thành công", () => onClose(true));
     }
 
     if (error) {
@@ -85,11 +86,11 @@ const AddHotelServiceModal: React.FunctionComponent<
         onFinish={onSubmit}
       >
         <TextInputField
-          placeholder="Nhập tên dịch vụ"
+          placeholder="Nhập tên tiện nghi"
           autoComplete="off"
           name="name"
-          label="Tên dịch vụ"
-          rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ" }]}
+          label="Tên tiện nghi"
+          rules={[{ required: true, message: "Vui lòng nhập tên tiện nghi" }]}
           className={clsx("duration-300", {
             "mb-3": !errors.name,
             "mb-7": errors.name,
@@ -119,4 +120,4 @@ const AddHotelServiceModal: React.FunctionComponent<
   );
 };
 
-export default AddHotelServiceModal;
+export default AddAmenityModal;

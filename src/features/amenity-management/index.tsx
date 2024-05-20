@@ -1,11 +1,13 @@
-import hotelServiceApi from "@/api/hotelServiceApi";
+import amenityApi from "@/api/amenityApi";
 import { useAppDispatch } from "@/app/hooks";
 import { initialHotelService, initialPagination } from "@/app/initial-states";
+import AddAmenityModal from "@/features/amenity-management/modals/add-amenity-modal";
+import UpdateAmenityModal from "@/features/amenity-management/modals/update-amenity-modal";
 import useAccessToken from "@/hooks/useAccessToken";
 import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
 import useHandleResponseSuccess from "@/hooks/useHandleResponseSuccess";
-import { HotelServiceProps } from "@/models/hotel-service";
+import { AmenityProps } from "@/models/amenity";
 import { PaginationProps } from "@/models/pagination";
 import { addLoading, removeLoading } from "@/redux/global-slice";
 import { EditOutlined, PlusOutlined, RestOutlined } from "@ant-design/icons";
@@ -18,13 +20,11 @@ import {
   type TableColumnsType,
 } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import AddHotelServiceModal from "./modals/add-hotel-service-modal";
-import UpdateHotelServiceModal from "./modals/update-hotel-service-modal";
 
-interface HotelServiceManagementProps {}
+interface AmenityManagementProps {}
 
-interface HotelServiceListProps {
-  items: HotelServiceProps[];
+interface AmenityListProps {
+  items: AmenityProps[];
   total: number;
 }
 
@@ -33,8 +33,8 @@ interface FilterProps {
   name: string;
 }
 
-const HotelServiceManagement: React.FunctionComponent<
-  HotelServiceManagementProps
+const AmenityManagement: React.FunctionComponent<
+  AmenityManagementProps
 > = () => {
   const dispatch = useAppDispatch();
   const { accessToken } = useAccessToken();
@@ -45,11 +45,13 @@ const HotelServiceManagement: React.FunctionComponent<
   const [filter, setFilter] = useState<FilterProps>({ id: "", name: "" });
   const [isLocalLoading, setLocalLoading] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] =
-    useState<HotelServiceProps>(initialHotelService);
+    useState<AmenityProps>(initialHotelService);
   const [isShowAddModal, setShowAddModal] = useState<boolean>(false);
   const [pageable, setPageable] = useState<PaginationProps>(initialPagination);
-  const [hotelServiceList, setHotelServiceList] =
-    useState<HotelServiceListProps>({ items: [], total: 0 });
+  const [hotelServiceList, setHotelServiceList] = useState<AmenityListProps>({
+    items: [],
+    total: 0,
+  });
 
   const onFilterChange = (
     key: keyof FilterProps,
@@ -62,15 +64,15 @@ const HotelServiceManagement: React.FunctionComponent<
     setPageable((prev) => ({ ...prev, page: e }));
   }, []);
 
-  const onDeleteHotelService = useCallback(
+  const onDeleteAmenity = useCallback(
     async (id: number) => {
       dispatch(addLoading());
-      const { ok, error } = await hotelServiceApi.deleteHotelService(id, {
+      const { ok, error } = await amenityApi.deleteAmenity(id, {
         Authorization: `Bearer ${accessToken}`,
       });
       dispatch(removeLoading());
       if (ok) {
-        handleResponseSuccess("Xóa dịch vụ thành công!");
+        handleResponseSuccess("Xóa tiện nghi thành công!");
         setPageable({ ...initialPagination });
       }
       if (error) {
@@ -84,14 +86,14 @@ const HotelServiceManagement: React.FunctionComponent<
   const showPopupConfirmDelete = useCallback(
     (id: number) => {
       showConfirmPopup(
-        "Xóa dịch vụ có thể xảy ra ảnh hưởng đến các tính năng khác của hệ thống, xác nhận xóa dịch vụ này?",
-        () => onDeleteHotelService(id)
+        "Xóa tiện nghi có thể xảy ra ảnh hưởng đến các tính năng khác của hệ thống, xác nhận xóa tiện nghi này?",
+        () => onDeleteAmenity(id)
       );
     },
-    [showConfirmPopup, onDeleteHotelService]
+    [showConfirmPopup, onDeleteAmenity]
   );
 
-  const columns: TableColumnsType<HotelServiceProps> = useMemo(
+  const columns: TableColumnsType<AmenityProps> = useMemo(
     () => [
       {
         title: "ID",
@@ -101,7 +103,7 @@ const HotelServiceManagement: React.FunctionComponent<
         ),
       },
       {
-        title: "Tên dịch vụ",
+        title: "Tên tiện nghi",
         dataIndex: "name",
         render: (name: string) => (
           <span className="text-base text-c-black-1">{name}</span>
@@ -109,7 +111,7 @@ const HotelServiceManagement: React.FunctionComponent<
       },
       {
         title: "Hành động",
-        render: (_, record: HotelServiceProps) => (
+        render: (_, record: AmenityProps) => (
           <div className="flex items-center gap-2">
             <Button
               type="primary"
@@ -133,15 +135,14 @@ const HotelServiceManagement: React.FunctionComponent<
     [showPopupConfirmDelete]
   );
 
-  const getAllHotelServices = useCallback(
+  const getAllAmenities = useCallback(
     async (p: PaginationProps, f: FilterProps) => {
       setLocalLoading(true);
-      const { ok, body, error, pagination } =
-        await hotelServiceApi.getAllHotelServices(
-          { Authorization: `Bearer ${accessToken}` },
-          p,
-          f
-        );
+      const { ok, body, error, pagination } = await amenityApi.getAllAmenities(
+        { Authorization: `Bearer ${accessToken}` },
+        p,
+        f
+      );
 
       setLocalLoading(false);
 
@@ -172,34 +173,36 @@ const HotelServiceManagement: React.FunctionComponent<
   }, []);
 
   useEffect(() => {
-    getAllHotelServices(pageable, filter);
+    getAllAmenities(pageable, filter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getAllHotelServices, pageable]);
+  }, [getAllAmenities, pageable]);
 
   return (
     <div className="px-10 py-8">
-      <AddHotelServiceModal open={isShowAddModal} onClose={onCloseAddModal} />
-      <UpdateHotelServiceModal
+      <AddAmenityModal open={isShowAddModal} onClose={onCloseAddModal} />
+      <UpdateAmenityModal
         open={selectedRow.id !== -1}
         onClose={onCloseUpdateModal}
-        hotelService={selectedRow}
+        amenity={selectedRow}
       />
 
       <div className="flex items-center justify-between w-full mb-4">
-        <h3 className="text-xl font-semibold text-c-blue-1">Quản lý dịch vụ</h3>
+        <h3 className="text-xl font-semibold text-c-blue-1">
+          Quản lý tiện nghi
+        </h3>
         <Button
           type="primary"
           className="flex items-center h-10 gap-2 px-6 text-base font-medium"
           onClick={() => setShowAddModal(true)}
         >
-          Thêm dịch vụ
+          Thêm tiện nghi
           <PlusOutlined />
         </Button>
       </div>
 
       <div className="grid w-full grid-cols-4 gap-3 mb-4">
         <div className="flex flex-col items-start col-span-1 gap-2">
-          <label className="text-sm">ID dịch vụ</label>
+          <label className="text-sm">ID</label>
           <Input
             className="text-base"
             type="text"
@@ -210,7 +213,7 @@ const HotelServiceManagement: React.FunctionComponent<
           />
         </div>
         <div className="flex flex-col items-start col-span-1 gap-2">
-          <label className="text-sm">Tên dịch vụ</label>
+          <label className="text-sm">Tên tiện nghi</label>
           <Input
             className="text-base"
             type="text"
@@ -264,4 +267,4 @@ const HotelServiceManagement: React.FunctionComponent<
   );
 };
 
-export default HotelServiceManagement;
+export default AmenityManagement;

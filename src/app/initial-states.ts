@@ -1,5 +1,5 @@
 import { EUserRole, EUserStatus } from "@/enums/user";
-import { HotelServiceProps } from "@/models/hotel-service";
+import { HotelServiceProps } from "@/models/amenity";
 import { PaginationProps } from "@/models/pagination";
 import { UserDetailProps, UserProfileProps } from "@/models/user";
 

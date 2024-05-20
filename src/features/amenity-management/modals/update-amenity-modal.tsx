@@ -1,26 +1,28 @@
-import hotelServiceApi from "@/api/hotelServiceApi";
+import amenityApi from "@/api/amenityApi";
 import TextInputField from "@/components/form/text-input-field";
 import useAccessToken from "@/hooks/useAccessToken";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
 import useHandleResponseSuccess from "@/hooks/useHandleResponseSuccess";
-import { HotelServiceProps } from "@/models/hotel-service";
+import { AmenityProps } from "@/models/amenity";
 import { Button, Form, Modal } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useMemo, useState } from "react";
 
-interface UpdateHotelServiceModalProps {
+interface UpdateAmenityModalProps {
   open: boolean;
   onClose: (refresh: boolean) => void;
-  hotelService: HotelServiceProps;
+  amenity: AmenityProps;
 }
 
 interface FormFieldErrorProps {
   name: boolean;
 }
 
-const UpdateHotelServiceModal: React.FunctionComponent<
-  UpdateHotelServiceModalProps
-> = ({ open, onClose, hotelService }) => {
+const UpdateAmenityModal: React.FunctionComponent<UpdateAmenityModalProps> = ({
+  open,
+  onClose,
+  amenity,
+}) => {
   const [form] = Form.useForm();
   const { accessToken } = useAccessToken();
   const handleResponseError = useHandleResponseError();
@@ -34,7 +36,7 @@ const UpdateHotelServiceModal: React.FunctionComponent<
   const title = useMemo(
     () => (
       <div className="flex items-center justify-center w-full">
-        <p className="text-base font-medium">Cập nhật thông tin dịch vụ</p>
+        <p className="text-base font-medium">Cập nhật thông tin tiện nghi</p>
       </div>
     ),
     []
@@ -48,8 +50,8 @@ const UpdateHotelServiceModal: React.FunctionComponent<
 
   const onSubmit = async (data: { name: string }) => {
     setLoading(true);
-    const { ok, error } = await hotelServiceApi.updateHotelService(
-      hotelService.id,
+    const { ok, error } = await amenityApi.updateAmenity(
+      amenity.id,
       data.name,
       {
         Authorization: `Bearer ${accessToken}`,
@@ -58,7 +60,7 @@ const UpdateHotelServiceModal: React.FunctionComponent<
     setLoading(false);
 
     if (ok) {
-      handleResponseSuccess("Cập nhật thông tin dịch vụ thành công", () =>
+      handleResponseSuccess("Cập nhật thông tin tiện nghi thành công", () =>
         onClose(true)
       );
     }
@@ -72,9 +74,9 @@ const UpdateHotelServiceModal: React.FunctionComponent<
     if (!open) {
       form.resetFields();
     } else {
-      form.setFieldValue("name", hotelService.name);
+      form.setFieldValue("name", amenity.name);
     }
-  }, [open, form, hotelService]);
+  }, [open, form, amenity]);
 
   return (
     <Modal
@@ -94,11 +96,11 @@ const UpdateHotelServiceModal: React.FunctionComponent<
         onFinish={onSubmit}
       >
         <TextInputField
-          placeholder="Nhập tên dịch vụ"
+          placeholder="Nhập tên tiện nghi"
           autoComplete="off"
           name="name"
-          label="Tên dịch vụ"
-          rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ" }]}
+          label="Tên tiện nghi"
+          rules={[{ required: true, message: "Vui lòng nhập tên tiện nghi" }]}
           className={clsx("duration-300", {
             "mb-3": !errors.name,
             "mb-7": errors.name,
@@ -128,4 +130,4 @@ const UpdateHotelServiceModal: React.FunctionComponent<
   );
 };
 
-export default UpdateHotelServiceModal;
+export default UpdateAmenityModal;

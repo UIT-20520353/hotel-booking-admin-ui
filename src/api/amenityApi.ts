@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HotelServiceProps } from "@/models/hotel-service";
+import { AmenityProps } from "@/models/amenity";
 import { HttpHeaders, HttpResponse } from "@/models/http";
 import axiosClient, { handleRequest } from "./axiosClient";
 import { PaginationProps } from "@/models/pagination";
 
-const hotelServiceApi = {
-  deleteHotelService: (
+const amenityApi = {
+  deleteAmenity: (
     id: number,
     headers: HttpHeaders
   ): Promise<HttpResponse<any>> => {
-    const url = `/api/hotel-services/${id}`;
+    const url = `/api/amenities/${id}`;
     return handleRequest(
       axiosClient.delete(url, {
         headers: {
@@ -18,12 +18,12 @@ const hotelServiceApi = {
       })
     );
   },
-  getAllHotelServices: (
+  getAllAmenities: (
     headers: HttpHeaders,
     pageable: PaginationProps,
     filter: { id: string; name: string }
-  ): Promise<HttpResponse<HotelServiceProps[]>> => {
-    const url = "/api/hotel-services";
+  ): Promise<HttpResponse<AmenityProps[]>> => {
+    const url = "/api/amenities";
     return handleRequest(
       axiosClient.get(url, {
         headers: {
@@ -39,25 +39,25 @@ const hotelServiceApi = {
       })
     );
   },
-  createHotelService: (
+  createAmenity: (
     name: string,
     headers: HttpHeaders
   ): Promise<HttpResponse<any>> => {
-    const url = "/api/hotel-services";
+    const url = "/api/amenities";
     return handleRequest(
       axiosClient.post(url, { name }, { headers: { ...headers } })
     );
   },
-  updateHotelService: (
+  updateAmenity: (
     id: number,
     name: string,
     headers: HttpHeaders
   ): Promise<HttpResponse<any>> => {
-    const url = `/api/hotel-services/${id}`;
+    const url = `/api/amenities/${id}`;
     return handleRequest(
       axiosClient.patch(url, { name }, { headers: { ...headers } })
     );
   },
 };
 
-export default hotelServiceApi;
+export default amenityApi;

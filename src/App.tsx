@@ -1,6 +1,6 @@
 import MainLayout from "@/components/layouts/main-layout";
 import Dashboard from "@/features/dashboard/dashboard";
-import HotelServiceManagement from "@/features/hotel-service-management";
+import AmenityManagement from "@/features/amenity-management";
 import LoginPage from "@/features/login/login";
 import UserManagement from "@/features/user-management";
 import UserDetailPage from "@/features/user-management/pages/user-detail";
@@ -19,7 +19,7 @@ const App: React.FunctionComponent<AppProps> = () => {
           <Route index element={<UserManagement />} />
         </Route>
         <Route path="hotel-services">
-          <Route index element={<HotelServiceManagement />} />
+          <Route index element={<AmenityManagement />} />
         </Route>
         <Route index element={<Dashboard />} />
       </Route>

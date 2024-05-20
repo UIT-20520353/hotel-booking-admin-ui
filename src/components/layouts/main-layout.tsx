@@ -73,7 +73,7 @@ const MainLayout: React.FunctionComponent<MainLayoutProps> = () => {
         icon: <TeamOutlined className="text-2xl" />,
       },
       {
-        label: "Quản lý dịch vụ",
+        label: "Quản lý tiện nghi",
         to: "/hotel-services",
         icon: <AppstoreAddOutlined className="text-2xl" />,
       },

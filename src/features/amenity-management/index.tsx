@@ -168,7 +168,7 @@ const AmenityManagement: React.FunctionComponent<
   const onCloseUpdateModal = useCallback((refresh: boolean) => {
     setSelectedRow(initialHotelService);
     if (refresh) {
-      setPageable({ ...initialPagination });
+      setPageable((prev) => ({ ...prev }));
     }
   }, []);
 

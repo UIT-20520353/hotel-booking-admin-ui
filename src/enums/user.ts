@@ -8,5 +8,5 @@ export enum EUserStatus {
 export enum EUserRole {
   USER = "USER",
   ADMIN = "ADMIN",
-  AGENT = "AGENT",
+  ARGENT = "ARGENT",
 }

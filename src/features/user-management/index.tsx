@@ -76,6 +76,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
       {
         title: "ID",
         dataIndex: "id",
+        key: "id",
         render: (id: string) => (
           <span className="text-base text-c-black-1">{id}</span>
         ),
@@ -83,12 +84,14 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
       {
         title: "Email",
         dataIndex: "email",
+        key: "email",
         render: (email: string) => (
           <span className="text-base text-c-black-1">{email}</span>
         ),
       },
       {
         title: "Họ tên",
+        key: "name",
         render: (_, record: UserDetailProps) => (
           <span className="text-base text-c-black-1">{`${record.firstName} ${record.lastName}`}</span>
         ),
@@ -96,6 +99,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
       {
         title: "Loại tài khoản",
         dataIndex: "role",
+        key: "role",
         render: (role: EUserRole) => (
           <span className="text-base text-c-black-1">
             {UserRoleMapper[role]}
@@ -105,6 +109,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
       {
         title: "Trạng thái",
         dataIndex: "status",
+        key: "status",
         render: (status: EUserStatus) => (
           <Tag
             color={UserStatusColorMapper[status]}
@@ -116,6 +121,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
       },
       {
         title: "Hành động",
+        key: "action",
         render: (_, record: UserDetailProps) => (
           <Tooltip title="Xem chi tiết" placement="right">
             <Link
@@ -149,6 +155,7 @@ const UserManagement: React.FunctionComponent<UserManagementProps> = () => {
         pagination={false}
         loading={isLocalLoading}
         locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+        scroll={{ y: userList.items.length > 4 ? 350 : undefined }}
       />
       {!!userList.total && (
         <div className="flex items-center justify-end w-full mt-3">

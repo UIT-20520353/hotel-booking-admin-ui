@@ -1,5 +1,6 @@
 import userApi from "@/api/userApi";
 import { initialUserDetail } from "@/app/initial-states";
+import SkeletonLoader from "@/components/common/skeleton-loader";
 import { EUserRole, EUserStatus } from "@/enums/user";
 import useAccessToken from "@/hooks/useAccessToken";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
@@ -17,6 +18,12 @@ import { useNavigate, useParams } from "react-router-dom";
 
 interface UserDetailPageProps {}
 
+interface ILoadImgError {
+  frontIdentityCard: boolean;
+  backIdentityCard: boolean;
+  selfieImg: boolean;
+}
+
 const UserDetailPage: React.FunctionComponent<UserDetailPageProps> = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -26,6 +33,11 @@ const UserDetailPage: React.FunctionComponent<UserDetailPageProps> = () => {
 
   const [userDetail, setUserDetail] =
     useState<UserDetailProps>(initialUserDetail);
+  const [loadImgError, setLoadImgError] = useState<ILoadImgError>({
+    frontIdentityCard: false,
+    backIdentityCard: false,
+    selfieImg: false,
+  });
 
   const infoColumns = useMemo(
     (): { label: string; dataIndex: string }[] => [
@@ -139,7 +151,7 @@ const UserDetailPage: React.FunctionComponent<UserDetailPageProps> = () => {
           ))}
         </div>
 
-        {userDetail.role === EUserRole.AGENT && (
+        {userDetail.role === EUserRole.ARGENT && userDetail.argent && (
           <div className="w-full pt-3 mt-5 border-t border-c-gray-1">
             <div className="grid grid-cols-3 gap-3">
               <div className="flex flex-col items-start col-span-1 gap-1">
@@ -155,27 +167,54 @@ const UserDetailPage: React.FunctionComponent<UserDetailPageProps> = () => {
                 <span className="text-sm text-c-blue-4">
                   Mặt trước CMND/CCCD
                 </span>
-                <Image
-                  className="max-h-[400px]"
-                  src={userDetail.argent.frontIdentityCard}
-                  alt="Mặt trước CMND/CCCD"
-                />
+                {loadImgError.frontIdentityCard ? (
+                  <SkeletonLoader width={200} height={200} />
+                ) : (
+                  <Image
+                    className="max-h-[400px]"
+                    src={userDetail.argent.frontIdentityCard}
+                    alt="Mặt trước CMND/CCCD"
+                    onError={() =>
+                      setLoadImgError((prev) => ({
+                        ...prev,
+                        frontIdentityCard: true,
+                      }))
+                    }
+                  />
+                )}
               </div>
               <div className="flex flex-col items-start col-span-1 gap-2">
                 <span className="text-sm text-c-blue-4">Mặt sau CMND/CCCD</span>
-                <Image
-                  className="max-h-[400px]"
-                  src={userDetail.argent.backIdentityCard}
-                  alt="Mặt sau CMND/CCCD"
-                />
+                {loadImgError.backIdentityCard ? (
+                  <SkeletonLoader width={200} height={200} />
+                ) : (
+                  <Image
+                    className="max-h-[400px]"
+                    src={userDetail.argent.backIdentityCard}
+                    alt="Mặt sau CMND/CCCD"
+                    onError={() =>
+                      setLoadImgError((prev) => ({
+                        ...prev,
+                        backIdentityCard: true,
+                      }))
+                    }
+                  />
+                )}
               </div>
               <div className="flex flex-col items-start col-span-1 gap-2">
                 <span className="text-sm text-c-blue-4">Ảnh selfie</span>
-                <Image
-                  className="max-h-[400px]"
-                  src={userDetail.argent.selfieImg}
-                  alt="Ảnh selfie"
-                />
+                {loadImgError.selfieImg ? (
+                  <SkeletonLoader width={200} height={200} />
+                ) : (
+                  <Image
+                    className="max-h-[400px]"
+                    src={userDetail.argent.selfieImg}
+                    alt="Ảnh selfie"
+                    onError={() =>
+                      setLoadImgError((prev) => ({ ...prev, selfieImg: true }))
+                    }
+                  />
+                )}
               </div>
             </div>
 

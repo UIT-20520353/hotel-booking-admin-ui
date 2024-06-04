@@ -1,12 +1,14 @@
 import amenityApi from "@/api/amenityApi";
 import { useAppDispatch } from "@/app/hooks";
 import { initialHotelService, initialPagination } from "@/app/initial-states";
+import { EAmenityType } from "@/enums/amenity";
 import AddAmenityModal from "@/features/amenity-management/modals/add-amenity-modal";
 import UpdateAmenityModal from "@/features/amenity-management/modals/update-amenity-modal";
 import useAccessToken from "@/hooks/useAccessToken";
 import useConfirmPopup from "@/hooks/useConfirmPopup";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
 import useHandleResponseSuccess from "@/hooks/useHandleResponseSuccess";
+import { AmenityMapper } from "@/mappers";
 import { AmenityProps } from "@/models/amenity";
 import { PaginationProps } from "@/models/pagination";
 import { addLoading, removeLoading } from "@/redux/global-slice";
@@ -16,6 +18,7 @@ import {
   Empty,
   Input,
   Pagination,
+  Select,
   Table,
   type TableColumnsType,
 } from "antd";
@@ -31,6 +34,7 @@ interface AmenityListProps {
 interface FilterProps {
   id: string;
   name: string;
+  type: EAmenityType[];
 }
 
 const AmenityManagement: React.FunctionComponent<
@@ -42,7 +46,11 @@ const AmenityManagement: React.FunctionComponent<
   const handleResponseSuccess = useHandleResponseSuccess();
   const showConfirmPopup = useConfirmPopup();
 
-  const [filter, setFilter] = useState<FilterProps>({ id: "", name: "" });
+  const [filter, setFilter] = useState<FilterProps>({
+    id: "",
+    name: "",
+    type: [],
+  });
   const [isLocalLoading, setLocalLoading] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] =
     useState<AmenityProps>(initialHotelService);
@@ -107,6 +115,15 @@ const AmenityManagement: React.FunctionComponent<
         dataIndex: "name",
         render: (name: string) => (
           <span className="text-base text-c-black-1">{name}</span>
+        ),
+      },
+      {
+        title: "Loại tiện nghi",
+        dataIndex: "type",
+        render: (type: EAmenityType) => (
+          <span className="text-base text-c-black-1">
+            {AmenityMapper[type]}
+          </span>
         ),
       },
       {
@@ -223,19 +240,33 @@ const AmenityManagement: React.FunctionComponent<
             onChange={(e) => onFilterChange("name", e)}
           />
         </div>
+        <div className="flex flex-col items-start col-span-1 gap-2">
+          <label className="text-sm">Loại tiện nghi</label>
+          <Select
+            className="w-full"
+            mode="multiple"
+            options={[
+              { label: "Bất động sản", value: EAmenityType.PROPERTY },
+              { label: "Phòng", value: EAmenityType.ROOM },
+            ]}
+            placeholder="Chọn loại tiện nghi"
+            value={filter.type}
+            onChange={(e) => setFilter((prev) => ({ ...prev, type: e }))}
+          />
+        </div>
         <div className="flex items-end col-span-1 gap-2">
           <Button
             type="primary"
             className="w-1/2"
             onClick={() => setPageable({ ...initialPagination })}
-            disabled={!filter.id && !filter.name}
+            disabled={!filter.id && !filter.name && !filter.type.length}
           >
             Tìm kiếm
           </Button>
           <Button
             className="w-1/2"
             onClick={() => {
-              setFilter({ id: "", name: "" });
+              setFilter({ id: "", name: "", type: [] });
               setPageable({ ...initialPagination });
             }}
           >

@@ -19,5 +19,5 @@ export interface UserDetailProps {
   email: string;
   role: EUserRole;
   status: EUserStatus;
-  argent: ArgentProps;
+  argent: ArgentProps | null;
 }

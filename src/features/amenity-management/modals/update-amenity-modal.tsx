@@ -1,5 +1,7 @@
 import amenityApi from "@/api/amenityApi";
+import SelectField from "@/components/form/select-input-field";
 import TextInputField from "@/components/form/text-input-field";
+import { EAmenityType } from "@/enums/amenity";
 import useAccessToken from "@/hooks/useAccessToken";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
 import useHandleResponseSuccess from "@/hooks/useHandleResponseSuccess";
@@ -16,6 +18,7 @@ interface UpdateAmenityModalProps {
 
 interface FormFieldErrorProps {
   name: boolean;
+  type: boolean;
 }
 
 const UpdateAmenityModal: React.FunctionComponent<UpdateAmenityModalProps> = ({
@@ -31,6 +34,7 @@ const UpdateAmenityModal: React.FunctionComponent<UpdateAmenityModalProps> = ({
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormFieldErrorProps>({
     name: false,
+    type: false,
   });
 
   const title = useMemo(
@@ -45,14 +49,16 @@ const UpdateAmenityModal: React.FunctionComponent<UpdateAmenityModalProps> = ({
   const handleFormFieldsChange = () => {
     setErrors({
       name: !!form.getFieldError("name").length,
+      type: !!form.getFieldError("type").length,
     });
   };
 
-  const onSubmit = async (data: { name: string }) => {
+  const onSubmit = async (data: { name: string; type: EAmenityType }) => {
     setLoading(true);
     const { ok, error } = await amenityApi.updateAmenity(
       amenity.id,
       data.name,
+      data.type,
       {
         Authorization: `Bearer ${accessToken}`,
       }
@@ -73,8 +79,10 @@ const UpdateAmenityModal: React.FunctionComponent<UpdateAmenityModalProps> = ({
   useEffect(() => {
     if (!open) {
       form.resetFields();
+      setErrors({ name: false, type: false });
     } else {
       form.setFieldValue("name", amenity.name);
+      form.setFieldValue("type", amenity.type);
     }
   }, [open, form, amenity]);
 
@@ -104,6 +112,20 @@ const UpdateAmenityModal: React.FunctionComponent<UpdateAmenityModalProps> = ({
           className={clsx("duration-300", {
             "mb-3": !errors.name,
             "mb-7": errors.name,
+          })}
+        />
+        <SelectField
+          placeholder="Chọn loại tiện nghi"
+          name="type"
+          label="Loại tiện nghi"
+          options={[
+            { label: "Bất động sản", value: EAmenityType.PROPERTY },
+            { label: "Phòng", value: EAmenityType.ROOM },
+          ]}
+          rules={[{ required: true, message: "Vui lòng chọn loại tiện nghi" }]}
+          className={clsx("duration-300", {
+            "mb-3": !errors.type,
+            "mb-7": errors.type,
           })}
         />
         <div className="flex items-center justify-center w-full gap-3 mt-2">
